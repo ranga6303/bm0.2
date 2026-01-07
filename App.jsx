@@ -1,295 +1,233 @@
-import {View,Text,StyleSheet,FlatList,Image,Button, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Animated,
+  StatusBar,
+} from 'react-native';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+export default function App() {
+  /* ===== ANIMATED VALUES (SEPARATE DRIVERS) ===== */
+  const glow = useRef(new Animated.Value(0)).current;     // JS driver
+  const float = useRef(new Animated.Value(10)).current;   // Native driver
 
+  useEffect(() => {
+    // Glow (JS-driven)
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glow, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: false,
+        }),
+        Animated.timing(glow, {
+          toValue: 0,
+          duration: 1500,
+          useNativeDriver: false,
+        }),
+      ]),
+    ).start();
 
-import {useState,useEffect} from 'react';
-const screenName="Profile"
-const App=()=>{
-  const [userdata,setUserdata]=useState({name:'Uzumaki Naruto',id:'1234567890'})
-  const [darkMode,set_darkMode]=useState(false);
-  console.log("hello")
-  return(
-    <View style={[styles.main_cntr,darkMode?{backgroundColor:'#000000ff'}:{backgroundColor:'#ffffffff'}]}>
+    // Floating motion (native-driven)
+    Animated.spring(float, {
+      toValue: 0,
+      friction: 4,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
-      {/* header */}
-      <View style={[{},styles.header,darkMode?styles.headerDM:styles.headerLM]}>
-        {/* app logo */}
-        <View style={[{flex:1,flexDirection:'row'}]}>
-          <FontAwesome name="bluetooth" size={30} style={[darkMode?{color:'#95b7b5ff'}:{color:'#fff'}]}></FontAwesome>
-          <Text style={[styles.headerT,darkMode?styles.DMT:styles.LMT]}>Mark</Text>
-        </View>
-       
+  const glowBorder = glow.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['rgba(56,189,248,0.3)', 'rgba(168,85,247,0.8)'],
+  });
+
+  return (
+    <View style={styles.root}>
+      <StatusBar barStyle="light-content" />
+
+      {/* HEADER */}
+      <View style={styles.header}>
+        <Text style={styles.logo}>MARK.OS</Text>
+        <Ionicons name="planet-outline" size={22} color="#38BDF8" />
       </View>
 
-      {/* details cntr */}
-      <View style={[userCntr.main_cntr]}>
-        <Image source={require('./assets/user.png')} style={[userCntr.img]}></Image>
+      {/* OUTER GLOW LAYER (JS DRIVER) */}
+      <Animated.View
+        style={[
+          styles.glowWrapper,
+          {borderColor: glowBorder},
+        ]}>
 
-        {/* user dtails cntr */}
-        <View style={[{alignItems:'center'}]}>
-          <Text style={[darkMode?userCntr.usernameD:userCntr.usernameL,userCntr.username]}>{userdata.name}</Text>
-          <Text style={[darkMode?userCntr.usernameD:userCntr.usernameL,userCntr.userid]}>{userdata.id}</Text>
-        </View>
+        {/* INNER FLOAT LAYER (NATIVE DRIVER) */}
+        <Animated.View
+          style={[
+            styles.profileCard,
+            {transform: [{translateY: float}]},
+          ]}>
+
+          <Image
+            source={require('./assets/user.png')}
+            style={styles.avatar}
+          />
+
+          <Text style={styles.name}>UZUMAKI NARUTO</Text>
+          <Text style={styles.id}>UID · 1234567890</Text>
+        </Animated.View>
+      </Animated.View>
+
+      {/* STATS */}
+      <View style={styles.statsRow}>
+        <Stat label="OVERALL" value="98%" />
+        <Stat label="MONTH" value="95%" />
+        <Stat label="TODAY" value="100%" />
       </View>
 
-      {/* mini nav bar */}    
-        <View style={[userCntr.navcntr]}>
-        {/* day wise */}
-       <TouchableOpacity style={[userCntr.navbtns,darkMode?userCntr.navbtnsD:userCntr.navbtnsL]}>
-           <View style={[{flexDirection:'row'}]}>
-            <Text style={[userCntr.mininavbarbigtext,darkMode?styles.DMT:styles.LMT]}>100</Text>
-           <Text style={[{paddingTop:15,},userCntr.mininavbarsmalltext,darkMode?styles.DMT:styles.LMT]}>%</Text>
-           </View>
-           <Text style={[darkMode?styles.DMT:styles.LMT]}>OVER-ALL</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[userCntr.navbtns,darkMode?userCntr.navbtnsD:userCntr.navbtnsL]}>
-           <View style={[{flexDirection:'row'}]}>
-            <Text style={[userCntr.mininavbarbigtext,darkMode?styles.DMT:styles.LMT]}>100</Text>
-           <Text style={[{paddingTop:15,},userCntr.mininavbarsmalltext,darkMode?styles.DMT:styles.LMT]}>%</Text>
-           </View>
-           <Text style={[darkMode?styles.DMT:styles.LMT]}>MONTH</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity  onPress={()=>{set_darkMode(!darkMode)}} style={[userCntr.navbtns,darkMode?userCntr.navbtnsD:userCntr.navbtnsL]}>
-           <View style={[{flexDirection:'row'}]}>
-            <Text style={[userCntr.mininavbarbigtext,darkMode?styles.DMT:styles.LMT]}>100</Text>
-           <Text style={[{paddingTop:15,},userCntr.mininavbarsmalltext,darkMode?styles.DMT:styles.LMT]}>%</Text>
-           </View>
-           <Text style={[darkMode?styles.DMT:styles.LMT]}>TODAY</Text>
-          </TouchableOpacity>
+      {/* CONTROLS */}
+      <View style={styles.controlPanel}>
+        <Action icon="fingerprint" label="AUTH" />
+        <Action icon="chart-timeline-variant" label="DATA" />
+        <Action icon="cog-outline" label="SYSTEM" />
       </View>
-
-      {/* user progress icons like marks etc */}
-         <View style={styles.user_related_icons_container}>
-
-          <View >
-            <TouchableOpacity>
-              <MaterialIcons style={[darkMode?styles.icons_dark:styles.icons_light]} name="how-to-reg" size={30} color="green" />
-          
-            </TouchableOpacity>
-              <Text style={[darkMode?styles.iconslabel_dark:styles.iconslabel_light]}>Mark Precence</Text>
-          </View>
-          
-          <View>
-            <TouchableOpacity>
-            <Ionicons style={[darkMode?styles.icons_dark:styles.icons_light]} name="stats-chart-outline" size={30}  />
-            <Text style={[darkMode?styles.iconslabel_dark:styles.iconslabel_light]}>Progress</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View>
-            <TouchableOpacity>
-            <Ionicons style={[darkMode?styles.icons_dark:styles.icons_light]} name="settings-outline" size={30}  />
-            <Text style={[darkMode?styles.iconslabel_dark:styles.iconslabel_light]}>settings</Text>
-            </TouchableOpacity>
-          </View>
-
-         
-
-          
-
-          
-
-          
-          
-          
-         </View>
-
     </View>
-  )
+  );
 }
-export default App;
 
+/* ===== SMALL COMPONENTS ===== */
 
-
-const userCntr=StyleSheet.create({
-  main_cntr:{
-    width:'90%',
-    alignItems:'center'
-  },
-  img:{
-    marginTop:60,
-    borderRadius:65,
-    height:130,
-    width:130
-  },
-  username:{
-    fontSize:25,
-    fontWeight:'bold'
-  },
-  usernameD:{
-    color:'#7c7878ff',
-    
-  },
-  usernameL:{
-    color:'#252323ff',
-  },
-  userid:{
-    fontSize:15,
-  },
-  navcntr:{
-    marginTop:16,
-    gap:10,
-    paddingVertical:10,
-    flexDirection:'row',
-    height:150,
-    width:'90%',
-    
-
-  },
-  navbtns:{
-    justifyContent:'center',
-    flex:1,
-   
-    borderRadius:20,
-    alignItems:'center'
-  },
-
-  navbtnsL:{
-     backgroundColor:'rgba(79, 47, 105, 0.2)',
-  },
-  navbtnsD:{
-     backgroundColor:'rgba(79, 47, 105, 0.2)',
-  },
-  mininavbarbigtext:{fontSize:30,fontWeight:'bold'},
-  mininavbarsmalltext:{fontSize:15,fontWeight:'bold'}
-
-})
-
-const styles=StyleSheet.create(
-  {
-    user_related_icons_container:{
-    width:'90%',
-    borderRadius:20,
-    backgroundColor:'rgba(32, 31, 31, 0.2)',
-    marginTop:16,
-    flexWrap:'wrap',
-    flexDirection:'row',
-    justifyContent:'space-evenly',
-    
-    gap:20
-  }
-  ,
-  settings_container:{
-    borderRadius:10,
-    width:'95%',
-    marginTop:16
-  }
-  ,
-  user_image:{
-    alignSelf:'flex-start',
-    width:80,
-    height:80,
-    borderRadius:50,
-    marginRight:12
-    
-  }
-  ,
-  user_form:{
-    flex:1,
-  }
-  ,
-  boldtext_light:{  
-    fontWeight:'bold',
-    fontSize:16,
-    marginBottom:5
-  }
-  ,
-  normaltext_light:{
-    fontSize:14,
-    marginBottom:3
-  },
-  icons_dark:{
-    marginHorizontal:30,
-    marginTop:15,
-    color:'#4fbb83ff'
-  },
-  icons_light:{
-    marginHorizontal:30,
-    marginTop:15,
-    color:'#001affff'
-  },
-
-  iconslabel_light:{
-    color:'#060606ff',
-    fontSize:14,
-    marginBottom:15,
-    textAlign:'center',
-    fontWeight:'400'
-  },
-  iconslabel_dark:{
-    color:'#ffffff',
-    fontSize:14,
-    marginBottom:15,
-    textAlign:'center',
-    fontWeight:'400'
-  },
-  settings_touchables_dark:{
-    borderRadius:40,
-    width:'100%',
-    height:55,
-    backgroundColor:'rgba(255,255,255,0.1)',
-    marginTop:5,
-    alignItems:'flex-start',
-    justifyContent:'center',
-    paddingLeft:10
-  },
-  settings_touchables_light:{
-    borderRadius:10,
-    width:'100%',
-    height:'13%',
-    backgroundColor:'#ffffffff',
-    marginTop:5,
-    alignItems:'flex-start',
-    justifyContent:'center',
-    paddingLeft:10
-  },
-  settings_lable_light:{
-    color:'#000000ff',
-    fontSize:16,
-    fontWeight:'bold'
-  },
-  settings_lable_dark:{
-    color:'#ffffffff',
-    fontSize:16,
-    fontWeight:'bold'
-  },
-
-
-    main_cntr:{
-      flex:1,
-      alignItems:'center',
-    },
-    header:{
-      height:70,
-      paddingTop:30,
-      paddingLeft:20,
-      flexDirection:'row',
-      alignItems:'center',
-      
-    },
-    headerDM:{
-      backgroundColor:'#25272aff'
-    },
-    headerLM:{
-      backgroundColor:'#a2bedbff'
-    },
-    headerT:{
-      fontSize:25,
-      fontWeight:'bold'
-    },
-    DMT:{
-      color:'#fff'
-    },
-    LMT:{
-      color:'#000000ff'
-    },    
-  }
+const Stat = ({label, value}) => (
+  <View style={styles.statBox}>
+    <Text style={styles.statValue}>{value}</Text>
+    <Text style={styles.statLabel}>{label}</Text>
+  </View>
 );
 
+const Action = ({icon, label}) => (
+  <TouchableOpacity style={styles.action} activeOpacity={0.8}>
+    <MaterialCommunityIcons name={icon} size={28} color="#38BDF8" />
+    <Text style={styles.actionText}>{label}</Text>
+  </TouchableOpacity>
+);
+
+/* ===== STYLES ===== */
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#020617',
+    alignItems: 'center',
+  },
+
+  header: {
+    width: '100%',
+    height: 70,
+    paddingTop: 24,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  logo: {
+    color: '#A855F7',
+    fontSize: 20,
+    fontWeight: '900',
+    letterSpacing: 3,
+  },
+
+  glowWrapper: {
+    marginTop: 24,
+    width: '88%',
+    borderRadius: 26,
+    borderWidth: 2,
+    padding: 2,
+  },
+
+  profileCard: {
+    borderRadius: 24,
+    alignItems: 'center',
+    paddingVertical: 26,
+    backgroundColor: 'rgba(15,23,42,0.95)',
+  },
+
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 12,
+    borderWidth: 2,
+    borderColor: '#38BDF8',
+  },
+
+  name: {
+    color: '#F8FAFC',
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+
+  id: {
+    color: '#94A3B8',
+    fontSize: 13,
+    marginTop: 4,
+    letterSpacing: 1,
+  },
+
+  statsRow: {
+    marginTop: 18,
+    width: '88%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  statBox: {
+    width: '30%',
+    backgroundColor: 'rgba(2,6,23,0.85)',
+    borderRadius: 18,
+    paddingVertical: 14,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(56,189,248,0.3)',
+  },
+
+  statValue: {
+    color: '#38BDF8',
+    fontSize: 20,
+    fontWeight: '800',
+  },
+
+  statLabel: {
+    color: '#94A3B8',
+    fontSize: 11,
+    marginTop: 4,
+    letterSpacing: 1,
+  },
+
+  controlPanel: {
+    marginTop: 26,
+    width: '88%',
+    borderRadius: 24,
+    backgroundColor: 'rgba(15,23,42,0.95)',
+    paddingVertical: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    borderWidth: 1,
+    borderColor: 'rgba(168,85,247,0.4)',
+  },
+
+  action: {
+    alignItems: 'center',
+    gap: 6,
+  },
+
+  actionText: {
+    color: '#E5E7EB',
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 1,
+  },
+});
