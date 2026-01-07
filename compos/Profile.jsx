@@ -55,17 +55,8 @@ export default function Profile({ route }) {
 
   /* ---------- settings data ---------- */
   const settingsData = [
-    { id: '1', label: 'Account Settings' },
-    { id: '2', label: 'Privacy & Security' },
-    { id: '3', label: 'Notifications' },
-    { id: '4', label: 'Appearance' },
-    { id: '5', label: 'Language' },
-    { id: '6', label: 'Help & Support' },
-    { id: '7', label: 'About App' },
-    { id: '8', label: 'Terms & Conditions' },
-    { id: '9', label: 'Privacy Policy' },
-    { id: '10', label: 'Logout' },
-    { id: '11', label: 'Delete Account' },
+    { id: '1', label: 'Dark theme' },
+    
   ];
 
   /* ---------- flatlist sections ---------- */

@@ -5,7 +5,7 @@ import api from './api.js'
 
 
 
-const Screen1 = ({navigation,route}) => {
+const Loginsrc= ({navigation,route}) => {
   const logindetails=route.params;
   console.log("recived from app.jsx:",logindetails)
 
@@ -205,4 +205,4 @@ logo:{
 }
 });
 
-export default Screen1
+export default Loginsrc
