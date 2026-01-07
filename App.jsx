@@ -1,6 +1,11 @@
 import {View,Text,StyleSheet,FlatList,Image,Button, TouchableOpacity} from 'react-native';
 import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+
 
 import {useState,useEffect} from 'react';
 const screenName="Profile"
@@ -9,22 +14,16 @@ const App=()=>{
   const [darkMode,set_darkMode]=useState(false);
   console.log("hello")
   return(
-    <View style={[styles.main_cntr,darkMode?{backgroundColor:'#000000ff'}:{backgroundColor:'#e0e5e5ff'}]}>
+    <View style={[styles.main_cntr,darkMode?{backgroundColor:'#000000ff'}:{backgroundColor:'#ffffffff'}]}>
 
       {/* header */}
       <View style={[{},styles.header,darkMode?styles.headerDM:styles.headerLM]}>
         {/* app logo */}
-        <View style={[{flex:1}]}>
-          <Text >BM</Text>
+        <View style={[{flex:1,flexDirection:'row'}]}>
+          <FontAwesome name="bluetooth" size={30} style={[darkMode?{color:'#95b7b5ff'}:{color:'#fff'}]}></FontAwesome>
+          <Text style={[styles.headerT,darkMode?styles.DMT:styles.LMT]}>Mark</Text>
         </View>
-        {/* screen name */}
-        <View style={[{flex:1,alignItems:'center'}]}>
-          <Text style={[styles.headerT,darkMode?styles.headerDMT:styles.headerLMT]}>{screenName}</Text>
-        </View>
-        {/* empty viewv for adjustment */}
-        <View style={[{flex:1}]}>
-          <Button title={darkMode?'dark':'light '} onPress={()=>{set_darkMode(!darkMode)}}/>
-        </View>
+       
       </View>
 
       {/* details cntr */}
@@ -38,79 +37,62 @@ const App=()=>{
         </View>
       </View>
 
-      {/* mini nav bar */}
-      <View style={[userCntr.navcntr]}>
+      {/* mini nav bar */}    
+        <View style={[userCntr.navcntr]}>
         {/* day wise */}
-       <TouchableOpacity style={[userCntr.navbtns]}>
+       <TouchableOpacity style={[userCntr.navbtns,darkMode?userCntr.navbtnsD:userCntr.navbtnsL]}>
            <View style={[{flexDirection:'row'}]}>
-            <Text>100</Text>
-           <Text>%</Text>
+            <Text style={[userCntr.mininavbarbigtext,darkMode?styles.DMT:styles.LMT]}>100</Text>
+           <Text style={[{paddingTop:15,},userCntr.mininavbarsmalltext,darkMode?styles.DMT:styles.LMT]}>%</Text>
            </View>
-           <Text>TODAY</Text>
+           <Text style={[darkMode?styles.DMT:styles.LMT]}>OVER-ALL</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[userCntr.navbtns]}>
+          <TouchableOpacity style={[userCntr.navbtns,darkMode?userCntr.navbtnsD:userCntr.navbtnsL]}>
            <View style={[{flexDirection:'row'}]}>
-            <Text>100</Text>
-           <Text>%</Text>
+            <Text style={[userCntr.mininavbarbigtext,darkMode?styles.DMT:styles.LMT]}>100</Text>
+           <Text style={[{paddingTop:15,},userCntr.mininavbarsmalltext,darkMode?styles.DMT:styles.LMT]}>%</Text>
            </View>
-           <Text>TODAY</Text>
+           <Text style={[darkMode?styles.DMT:styles.LMT]}>MONTH</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity  onPress={()=>{set_darkMode(!darkMode)}} style={[userCntr.navbtns]}>
+          <TouchableOpacity  onPress={()=>{set_darkMode(!darkMode)}} style={[userCntr.navbtns,darkMode?userCntr.navbtnsD:userCntr.navbtnsL]}>
            <View style={[{flexDirection:'row'}]}>
-            <Text style={[{fontSize:35,fontWeight:'bold'}]}>100</Text>
-           <Text>%</Text>
+            <Text style={[userCntr.mininavbarbigtext,darkMode?styles.DMT:styles.LMT]}>100</Text>
+           <Text style={[{paddingTop:15,},userCntr.mininavbarsmalltext,darkMode?styles.DMT:styles.LMT]}>%</Text>
            </View>
-           <Text>TODAY</Text>
+           <Text style={[darkMode?styles.DMT:styles.LMT]}>TODAY</Text>
           </TouchableOpacity>
       </View>
 
       {/* user progress icons like marks etc */}
          <View style={styles.user_related_icons_container}>
 
-          <View>
+          <View >
             <TouchableOpacity>
-            <Ionicons style={styles.icons_dark} name="bar-chart-outline" size={30}  />
-            <Text style={styles.iconslabel_dark}>Marks</Text>
+              <MaterialIcons style={[darkMode?styles.icons_dark:styles.icons_light]} name="how-to-reg" size={30} color="green" />
+          
             </TouchableOpacity>
+              <Text style={[darkMode?styles.iconslabel_dark:styles.iconslabel_light]}>Mark Precence</Text>
           </View>
           
           <View>
             <TouchableOpacity>
-            <Ionicons style={styles.icons_dark} name="stats-chart-outline" size={30}  />
-            <Text style={styles.iconslabel_dark}>Attendance</Text>
+            <Ionicons style={[darkMode?styles.icons_dark:styles.icons_light]} name="stats-chart-outline" size={30}  />
+            <Text style={[darkMode?styles.iconslabel_dark:styles.iconslabel_light]}>Progress</Text>
             </TouchableOpacity>
           </View>
 
           <View>
             <TouchableOpacity>
-            <Ionicons style={styles.icons_dark} name="trophy-outline" size={30} />
-            <Text style={styles.iconslabel_dark}>Achievements</Text>
-            </TouchableOpacity>
-          </View>
-           
-
-          <View>
-            <TouchableOpacity>
-            <Ionicons style={styles.icons_dark} name="medal-outline" size={30}  />
-            <Text style={styles.iconslabel_dark}>Rank</Text>
+            <Ionicons style={[darkMode?styles.icons_dark:styles.icons_light]} name="settings-outline" size={30}  />
+            <Text style={[darkMode?styles.iconslabel_dark:styles.iconslabel_light]}>settings</Text>
             </TouchableOpacity>
           </View>
 
-          <View>
-            <TouchableOpacity>
-            <Ionicons style={styles.icons_dark} name="bar-chart-outline" size={30}  />
-            <Text style={styles.iconslabel_dark}>Marks</Text>
-            </TouchableOpacity>
-          </View>
+         
 
-          <View>
-            <TouchableOpacity>
-            <Ionicons style={styles.icons_dark} name="stats-chart-outline" size={30}  />
-            <Text style={styles.iconslabel_dark}>Attendance</Text>
-            </TouchableOpacity>
-          </View>
+          
 
           
 
@@ -138,7 +120,7 @@ const userCntr=StyleSheet.create({
     width:130
   },
   username:{
-    fontSize:30,
+    fontSize:25,
     fontWeight:'bold'
   },
   usernameD:{
@@ -152,6 +134,7 @@ const userCntr=StyleSheet.create({
     fontSize:15,
   },
   navcntr:{
+    marginTop:16,
     gap:10,
     paddingVertical:10,
     flexDirection:'row',
@@ -163,10 +146,19 @@ const userCntr=StyleSheet.create({
   navbtns:{
     justifyContent:'center',
     flex:1,
-    backgroundColor:'#fff',
+   
     borderRadius:20,
     alignItems:'center'
-  }
+  },
+
+  navbtnsL:{
+     backgroundColor:'rgba(79, 47, 105, 0.2)',
+  },
+  navbtnsD:{
+     backgroundColor:'rgba(79, 47, 105, 0.2)',
+  },
+  mininavbarbigtext:{fontSize:30,fontWeight:'bold'},
+  mininavbarsmalltext:{fontSize:15,fontWeight:'bold'}
 
 })
 
@@ -175,12 +167,13 @@ const styles=StyleSheet.create(
     user_related_icons_container:{
     width:'90%',
     borderRadius:20,
-    backgroundColor:'rgba(255, 255, 255, 0.1)',
+    backgroundColor:'rgba(32, 31, 31, 0.2)',
     marginTop:16,
     flexWrap:'wrap',
     flexDirection:'row',
-    justifyContent:'space-around',
-    alignItems:'center'
+    justifyContent:'space-evenly',
+    
+    gap:20
   }
   ,
   settings_container:{
@@ -220,20 +213,22 @@ const styles=StyleSheet.create(
   icons_light:{
     marginHorizontal:30,
     marginTop:15,
-    color:'#000000ff'
+    color:'#001affff'
   },
 
   iconslabel_light:{
     color:'#060606ff',
     fontSize:14,
     marginBottom:15,
-    textAlign:'center'
+    textAlign:'center',
+    fontWeight:'400'
   },
   iconslabel_dark:{
     color:'#ffffff',
     fontSize:14,
     marginBottom:15,
-    textAlign:'center'
+    textAlign:'center',
+    fontWeight:'400'
   },
   settings_touchables_dark:{
     borderRadius:40,
@@ -273,7 +268,8 @@ const styles=StyleSheet.create(
     },
     header:{
       height:70,
-      paddingTop:20,
+      paddingTop:30,
+      paddingLeft:20,
       flexDirection:'row',
       alignItems:'center',
       
@@ -288,10 +284,10 @@ const styles=StyleSheet.create(
       fontSize:25,
       fontWeight:'bold'
     },
-    headerDMT:{
+    DMT:{
       color:'#fff'
     },
-    headerLMT:{
+    LMT:{
       color:'#000000ff'
     },    
   }
