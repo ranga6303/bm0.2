@@ -1,225 +1,209 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity,
-  FlatList,
+  StatusBar,
+  Pressable,
+  Alert,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import api from './api';
 
-export default function Profile({ route }) {
-  /* ---------- navigation params ---------- */
-  const logindetails = route?.params;
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-  console.log('received from Screen1:', logindetails);
+export default function Profile() {
+  const [dark, setDark] = useState(false);
+  const [st, Setst] = useState(true);
 
-  /* ---------- API ---------- */
-  const userdetails_url = 'http://10.212.32.231:8082/api/login';
+  const T = dark ? theme.dark : theme.light;
+  const Tnot = dark ? theme.light : theme.dark;
 
-  /* ---------- state ---------- */
-  const [userdata, setUserdata] = useState({
-    username: 'default',
-    rollno: 'default',
-    branch: 'CSE',
-    year: 'default',
-    mesg: 'default',
-    section: 'D',
-    phone: 'default',
-    email: 'default',
-  });
-
-  /* ---------- fetch user data ---------- */
-  useEffect(() => {
-    if (!logindetails) return;
-
-    const fetchData = async () => {
-      const details = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: logindetails.userid,
-          pass: logindetails.password,
-          type: logindetails.usertype,
-        }),
-      };
-
-      const data = await api(userdetails_url, details);
-      if (data) setUserdata(data);
-    };
-
-    fetchData();
-  }, [logindetails]);
-
-  /* ---------- settings data ---------- */
-  const settingsData = [
-    { id: '1', label: 'Dark theme' },
-    
-  ];
-
-  /* ---------- flatlist sections ---------- */
-  const sections = [{ key: 'profile' }, { key: 'settings' }];
-
-  /* ---------- render items ---------- */
-  const renderItem = ({ item }) => {
-    if (item.key === 'profile') {
-      return (
-        <View style={styles.user_container}>
-          <Image
-            source={require('../assets/user.png')}
-            style={styles.user_image}
-          />
-
-          <View style={styles.user_form}>
-            <Text style={styles.boldtext_light}>{userdata.username}</Text>
-            <Text style={styles.normaltext_light}>{userdata.rollno}</Text>
-            <Text style={styles.normaltext_light}>
-              {userdata.branch} - {userdata.year} Year
-            </Text>
-            <Text style={styles.normaltext_light}>
-              sec-{userdata.section}
-            </Text>
-            <Text style={styles.normaltext_light}>
-              Phone: {userdata.phone}
-            </Text>
-            <Text style={styles.normaltext_light}>
-              Email: {userdata.email}
-            </Text>
-            <Text style={styles.normaltext_light}>
-              message: {userdata.mesg}
-            </Text>
-          </View>
-        </View>
-      );
-    }
-
-    if (item.key === 'settings') {
-      return (
-        <View style={styles.settings_container}>
-          {settingsData.map(setting => (
-            <TouchableOpacity
-              key={setting.id}
-              style={styles.settings_touchables_dark}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.settings_lable_dark}>
-                {setting.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      );
-    }
-
-    return null;
+  const showPop = (txt) => {
+    Alert.alert('Pressed', txt);
   };
 
-  /* ---------- UI ---------- */
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Profile</Text>
+    <View style={[styles.root, { backgroundColor: T.bg }]}>
+      <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
+
+      {/* HEADER */}
+      <View style={[styles.header, { backgroundColor: T.header }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{
+            height: 25,
+            width: 20,
+            borderRadius: 50,
+            backgroundColor: T.primary,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <FontAwesome name="bluetooth-b" size={18} style={{ color: Tnot.text }} />
+          </View>
+
+          <Text style={[styles.logo, { color: T.text }]}>
+            Mark{st ? '' : ''}
+          </Text>
+        </View>
+
+        <Pressable onPress={() => setDark(!dark)}>
+          <Ionicons
+            name={dark ? 'sunny-outline' : 'moon-outline'}
+            size={22}
+            color={T.text}
+          />
+        </Pressable>
       </View>
 
-      {/* Content */}
-      <FlatList
-        data={sections}
-        keyExtractor={item => item.key}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        removeClippedSubviews
-        overScrollMode="never"
-        bounces={false}
-      />
+      {/* PROFILE */}
+      <View style={{ alignItems: 'center' }}>
+        <View style={[styles.profileCard, { backgroundColor: T.card }]}>
+          <Image
+            source={require('../assets/user.png')}
+            style={styles.avatar}
+          />
+          <Text style={[styles.name, { color: T.text }]}>
+            Uzumaki Naruto
+          </Text>
+          <Text style={[styles.id, { color: T.subText }]}>
+            Student · 1234567890
+          </Text>
+        </View>
+
+        {/* STATS */}
+        <View style={styles.stats}>
+          <Stat label="Overall" value="98" theme={T} onPress={() => showPop('Overall')} />
+          <Stat label="Month" value="95" theme={T} onPress={() => showPop('Month')} />
+          <Stat label="Today" value="100" theme={T} onPress={() => showPop('Today')} />
+        </View>
+
+        {/* ACTIONS */}
+        <View style={[styles.actionCard, { backgroundColor: T.card }]}>
+          <Action icon="how-to-reg" label="Mark prsnc" theme={T} onPress={() => showPop('Mark prsnc')} />
+          <Action icon="bar-chart" label="Analytics" theme={T} onPress={() => showPop('Analytics')} />
+          <Action icon="settings" label="Settings" theme={T} onPress={() => Setst(!st)} />
+        </View>
+      </View>
     </View>
   );
 }
 
-/* ================== styles ================== */
+/* ===== COMPONENTS ===== */
+
+const Stat = ({ label, value, theme, onPress }) => (
+  <Pressable
+    style={[styles.statBox, { backgroundColor: theme.soft }]}
+    onPress={onPress}
+  >
+    <Text style={[styles.statValue, { color: theme.primary }]}>{value}%</Text>
+    <Text style={[styles.statLabel, { color: theme.subText }]}>{label}</Text>
+  </Pressable>
+);
+
+const Action = ({ icon, label, theme, onPress }) => (
+  <Pressable
+    style={styles.action}
+    onPress={onPress}
+    android_ripple={{ color: theme.primary + '22' }}
+  >
+    <MaterialIcons name={icon} size={26} color={theme.primary} />
+    <Text style={[styles.actionText, { color: theme.text }]}>{label}</Text>
+  </Pressable>
+);
+
+/* ===== THEME ===== */
+
+const theme = {
+  light: {
+    bg: '#EEF2F7',
+    header: '#FFFFFF',
+    card: '#FFFFFF',
+    soft: '#d2d7ddc0',
+    primary: '#4F46E5',
+    text: '#0F172A',
+    subText: '#64748B',
+  },
+  dark: {
+    bg: '#0B1220',
+    header: '#020617',
+    card: '#020617',
+    soft: '#0F172A',
+    primary: '#38BDF8',
+    text: '#F8FAFC',
+    subText: '#94A3B8',
+  },
+};
+
+/* ===== STYLES ===== */
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#272222ff',
-  },
+  root: { flex: 1 },
 
   header: {
-    width: '100%',
-    height: 70,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    justifyContent: 'center',
-  },
-
-  headerText: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-    alignSelf: 'center',
-  },
-
-  listContent: {
-    paddingBottom: 30,
-    alignItems: 'center',
-  },
-
-  user_container: {
-    borderRadius: 10,
-    minHeight: 100,
-    width: '95%',
-    backgroundColor: 'rgba(32, 52, 45, 0.9)',
-    marginTop: 16,
-    padding: 12,
+    height: 72,
+    paddingHorizontal: 20,
+    paddingTop: 24,
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
 
-  user_image: {
-    width: 80,
-    height: 80,
-    borderRadius: 50,
-    marginRight: 12,
+  logo: {
+    fontSize: 20,
+    fontWeight: '800',
+    letterSpacing: 2,
   },
 
-  user_form: {
-    flex: 1,
+  profileCard: {
+    marginTop: 30,
+    width: '88%',
+    borderRadius: 26,
+    alignItems: 'center',
+    paddingVertical: 28,
+    elevation: 8,
   },
 
-  boldtext_light: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 5,
-    color: '#fff',
+  avatar: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    marginBottom: 14,
   },
 
-  normaltext_light: {
-    fontSize: 14,
-    marginBottom: 3,
-    color: '#ddd',
+  name: { fontSize: 22, fontWeight: '700' },
+
+  id: { marginTop: 4, fontSize: 14 },
+
+  stats: {
+    marginTop: 18,
+    width: '88%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 
-  settings_container: {
-    borderRadius: 10,
-    width: '95%',
-    marginTop: 16,
+  statBox: {
+    width: '30%',
+    borderRadius: 18,
+    paddingVertical: 16,
+    alignItems: 'center',
   },
 
-  settings_touchables_dark: {
-    borderRadius: 40,
-    width: '100%',
-    height: 55,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    marginTop: 5,
-    justifyContent: 'center',
-    paddingLeft: 14,
+  statValue: { fontSize: 22, fontWeight: '800' },
+
+  statLabel: { marginTop: 4, fontSize: 12, fontWeight: '600' },
+
+  actionCard: {
+    marginTop: 22,
+    width: '88%',
+    borderRadius: 26,
+    paddingVertical: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    elevation: 6,
   },
 
-  settings_lable_dark: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  action: { alignItems: 'center', gap: 6 },
+
+  actionText: { fontSize: 13, fontWeight: '600' },
 });
