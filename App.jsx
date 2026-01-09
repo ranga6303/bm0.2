@@ -43,11 +43,12 @@ export default function App() {
 
       {/* HEADER */}
       <View style={[styles.header, {backgroundColor: T.header}]}>
-        <Text style={[styles.logo, {color: T.primary}]}>MARK</Text>
+        
+        {/* <Text style={[styles.logo, {color: T.primary}]}>MARK</Text> */}
 
-        <View style={styles.headerLeft}>
+        <View style={[styles.headerLeft,{flexDirection:'row'}]}>
           <FontAwesome name="bluetooth" size={22} color={theme.primary} />
-          <Text style={[styles.headerTitle, {color: theme.textPrimary}]}>
+          <Text style={[styles.logo, {color: T.primary}]}>
             Mark
           </Text>
         </View>
