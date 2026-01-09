@@ -11,6 +11,7 @@ import {
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 export default function App() {
   /* ===== HOOKS ===== */
@@ -43,6 +44,13 @@ export default function App() {
       {/* HEADER */}
       <View style={[styles.header, {backgroundColor: T.header}]}>
         <Text style={[styles.logo, {color: T.primary}]}>MARK</Text>
+
+        <View style={styles.headerLeft}>
+          <FontAwesome name="bluetooth" size={22} color={theme.primary} />
+          <Text style={[styles.headerTitle, {color: theme.textPrimary}]}>
+            Mark
+          </Text>
+        </View>
 
         <TouchableOpacity onPress={() => setDark(!dark)}>
           <Ionicons
