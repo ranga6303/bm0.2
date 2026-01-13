@@ -3,7 +3,7 @@
 // Hybrid theme control: system default + user toggle override
 // (User can switch theme here through context)
 
-import React, { useContext } from 'react';
+import React, { useContext ,useEffect} from 'react';
 import {
   View,
   Text,
@@ -36,6 +36,10 @@ export default function Profile() {
   const Tnot = dark ? theme.light : theme.dark;
 
   const navigation = useNavigation();
+
+  useEffect(()=>{
+    console.log("satte: ",navigation.getState())
+  })
 
   // Simple placeholder action
   const showPop = (txt) => {

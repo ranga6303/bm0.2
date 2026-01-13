@@ -15,7 +15,10 @@ export default function App() {
       <ThemeProvider>
 
         {/* Handles screen routing */}
-        <NavigationContainer>
+        <NavigationContainer  onStateChange={(state) => {
+    const names = state.routes.map(r => r.name);
+    console.log("STACK:", names.join(" -> "));
+  }}>
           <AppNavigator />
         </NavigationContainer>
 

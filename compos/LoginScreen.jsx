@@ -1,9 +1,7 @@
 // compos/LoginScreen.jsx
 // LOGIN SCREEN
-// Follows system/default theme (no toggle here)
-// Navigates to Profile on login (API skipped for now)
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import {
   View,
   Text,
@@ -12,41 +10,41 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   StyleSheet,
+  BackHandler,
+  ToastAndroid,
 } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import { ThemeContext } from '../context/ThemeContext.jsx';
 import { theme } from '../theme/theme.js';
 
 export default function LoginScreen() {
 
-  // Get theme from context (system default initially)
   const { dark } = useContext(ThemeContext);
   const T = dark ? theme.dark : theme.light;
   const Tnot = dark ? theme.light : theme.dark;
 
-  // Navigation handler
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
-  // Local states
   const [user_type, setUser_type] = useState("Student");
   const [userinputval, setUserinputval] = useState("");
   const [passinputval, setPassinputval] = useState("");
   const [showPass, setShowPass] = useState(false);
 
-  // Focus states for futuristic UI effect
   const [focusUser, setFocusUser] = useState(false);
   const [focusPass, setFocusPass] = useState(false);
 
-  // Keyboard shifting logic
   const [togglemargin, setToggleMargin] = useState(styles.formCenter.marginTop);
   const [toggleStyle, setToggleStyle] = useState(styles.textBig);
 
+  const lastBackPress = useRef(0);
+
+  // keyboard shift UI logic
   useEffect(() => {
     const show = Keyboard.addListener('keyboardDidShow', () => {
       setToggleMargin(styles.formShift.marginTop);
@@ -64,13 +62,45 @@ export default function LoginScreen() {
     };
   }, []);
 
-  // For now navigation only (API can be inserted later)
+  // debug state log
+  useEffect(() => {
+    console.log("state: ", navigation.getState());
+  });
+
+  // double-back exit logic (only on Login screen)
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        const now = Date.now();
+
+        // double press within 2 seconds
+        if (now - lastBackPress.current < 2000) {
+          BackHandler.exitApp();
+          return true;
+        }
+
+        ToastAndroid.show("Press again to exit", ToastAndroid.SHORT);
+        lastBackPress.current = now;
+        return true; // block default behavior
+      };
+
+      const sub = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+      return () => sub.remove();
+    }, [])
+  );
+
+  // navigation
   const handleLogin = () => {
     navigation.navigate("Profile");
   };
 
-  const handleRegOrFor=()=>{
-    navigation.navigate("s2");
+  const handleRegister = () => {
+    navigation.navigate("RegOrFor", { scrtype: "Register", usertype: user_type });
+  };
+
+  const handleForgotPass = () => {
+    navigation.navigate("RegOrFor", { scrtype: "forgotpass", usertype: user_type });
   };
 
   return (
@@ -84,24 +114,16 @@ export default function LoginScreen() {
         }
       ]}>
 
-        {/* HEADER */}
         <View style={styles.header}>
-
-          <View style={[
-            styles.iconCircle,
-            { backgroundColor: T.primary }
-          ]}>
+          <View style={[styles.iconCircle, { backgroundColor: T.primary }]}>
             <FontAwesome name="bluetooth-b" size={22} color={Tnot.text} />
           </View>
-
           <Text style={[styles.logo, { color: T.primary }]}>
             EACON MARK
           </Text>
         </View>
 
-        {/* FORM */}
         <View style={[styles.form, { marginTop: togglemargin }]}>
-          
           <Text style={[toggleStyle, { color: T.text }]}>
             {user_type} Login
           </Text>
@@ -177,7 +199,6 @@ export default function LoginScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* SMALL BUTTONS */}
             <View style={styles.smallBtnRow}>
               <TouchableOpacity onPress={() =>
                 setUser_type(user_type === "Student" ? "Staff" : "Student")
@@ -187,14 +208,13 @@ export default function LoginScreen() {
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={handleRegOrFor}>
+              <TouchableOpacity onPress={handleRegister}>
                 <Text style={[styles.smallBtn, { color: T.primary }]}>
                   Register?
                 </Text>
               </TouchableOpacity>
             </View>
 
-            {/* LOGIN BUTTON */}
             <TouchableOpacity
               onPress={handleLogin}
               style={[styles.loginBtn, { backgroundColor: T.primary }]}
@@ -204,8 +224,7 @@ export default function LoginScreen() {
               </Text>
             </TouchableOpacity>
 
-            {/* FORGOT PASSWORD */}
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleForgotPass}>
               <Text style={[styles.smallBtn, { color: T.subText }]}>
                 Forgot Password?
               </Text>
@@ -219,9 +238,7 @@ export default function LoginScreen() {
 }
 
 
-/* ==========================================
-   STYLES (unchanged from your original)
-   ========================================== */
+/* styles (unchanged) */
 const styles = StyleSheet.create({
   root: {
     flex: 1,
