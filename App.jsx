@@ -1,15 +1,25 @@
-import { View, Text } from 'react-native'
-import React, { Profiler } from 'react'
-import Profile from './compos/Profile.jsx'
-import LoginSrceen from './compos/LoginScreen.jsx'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
+// App.jsx
+// Entry point of the app + navigation + theme context setup
 
-const App = () => {
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import AppNavigator from './navigation/AppNavigator.jsx';
+import { ThemeProvider } from './context/ThemeContext.jsx';
+
+export default function App() {
   return (
-   <SafeAreaProvider>
-    <LoginSrceen/>
-   </SafeAreaProvider>
-  )
-}
+    <SafeAreaProvider>
+      {/* Global theme controller */}
+      <ThemeProvider>
 
-export default App
+        {/* Handles screen routing */}
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+
+      </ThemeProvider>
+    </SafeAreaProvider>
+  );
+}

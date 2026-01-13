@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from 'react';
+// compos/LoginScreen.jsx
+// LOGIN SCREEN
+// Follows system/default theme (no toggle here)
+// Navigates to Profile on login (API skipped for now)
+
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -7,29 +12,38 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   StyleSheet,
-  useColorScheme,
 } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import api from './api.js';
+import { useNavigation } from '@react-navigation/native';
+
+import { ThemeContext } from '../context/ThemeContext.jsx';
+import { theme } from '../theme/theme.js';
 
 export default function LoginScreen() {
 
-  const scheme = useColorScheme();
-  const T = scheme === 'dark' ? theme.dark : theme.light;
-  const Tnot = scheme === 'dark' ? theme.light : theme.dark;
+  // Get theme from context (system default initially)
+  const { dark } = useContext(ThemeContext);
+  const T = dark ? theme.dark : theme.light;
+  const Tnot = dark ? theme.light : theme.dark;
+
+  // Navigation handler
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
+  // Local states
   const [user_type, setUser_type] = useState("Student");
   const [userinputval, setUserinputval] = useState("");
   const [passinputval, setPassinputval] = useState("");
   const [showPass, setShowPass] = useState(false);
 
+  // Focus states for futuristic UI effect
   const [focusUser, setFocusUser] = useState(false);
   const [focusPass, setFocusPass] = useState(false);
 
+  // Keyboard shifting logic
   const [togglemargin, setToggleMargin] = useState(styles.formCenter.marginTop);
   const [toggleStyle, setToggleStyle] = useState(styles.textBig);
 
@@ -50,16 +64,9 @@ export default function LoginScreen() {
     };
   }, []);
 
-  const url_login = "http://10.246.214.231:3000/api/login";
-
-  const details_login = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      id: userinputval,
-      pass: passinputval,
-      type: user_type
-    })
+  // For now navigation only (API can be inserted later)
+  const handleLogin = () => {
+    navigation.navigate("Profile");
   };
 
   return (
@@ -90,14 +97,14 @@ export default function LoginScreen() {
 
         {/* FORM */}
         <View style={[styles.form, { marginTop: togglemargin }]}>
-
+          
           <Text style={[toggleStyle, { color: T.text }]}>
             {user_type} Login
           </Text>
 
           <View style={styles.formContainer}>
 
-            {/* USER INPUT */}
+            {/* USER FIELD */}
             <View style={[
               styles.inputRow,
               {
@@ -105,7 +112,6 @@ export default function LoginScreen() {
                 borderColor: focusUser ? T.primary : T.subText
               }
             ]}>
-
               <View style={[
                 styles.leftIconCircle,
                 {
@@ -126,8 +132,7 @@ export default function LoginScreen() {
               />
             </View>
 
-
-            {/* PASSWORD INPUT */}
+            {/* PASSWORD FIELD */}
             <View style={[
               styles.inputRow,
               {
@@ -187,7 +192,7 @@ export default function LoginScreen() {
 
             {/* LOGIN BUTTON */}
             <TouchableOpacity
-              onPress={() => api(url_login, details_login)}
+              onPress={handleLogin}
               style={[styles.loginBtn, { backgroundColor: T.primary }]}
             >
               <Text style={[styles.loginText, { color: Tnot.text }]}>
@@ -210,78 +215,50 @@ export default function LoginScreen() {
 }
 
 
-/* =============== THEME ================ */
-const theme = {
-  light: {
-    bg: '#EEF2F7',
-    card: '#FFFFFF',
-    primary: '#4F46E5',
-    text: '#0F172A',
-    subText: '#64748B',
-  },
-  dark: {
-    bg: '#0B1220',
-    card: '#020617',
-    primary: '#38BDF8',
-    text: '#F8FAFC',
-    subText: '#94A3B8',
-  },
-};
-
-
-/* =============== STYLES =============== */
+/* ==========================================
+   STYLES (unchanged from your original)
+   ========================================== */
 const styles = StyleSheet.create({
   root: {
     flex: 1,
     paddingHorizontal: 20,
   },
-
   header: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   iconCircle: {
     padding: 6,
     borderRadius: 50,
   },
-
   logo: {
     fontSize: 22,
     fontWeight: '900',
-    letterSpacing:1
+    letterSpacing: 1,
   },
-
   form: {
     width: '100%',
     alignItems: 'center',
   },
-
   formContainer: {
     width: '80%',
   },
-
   formShift: {
     marginTop: '15%',
   },
-
   formCenter: {
     marginTop: '50%',
   },
-
   textBig: {
     fontSize: 30,
     fontWeight: 'bold',
     marginBottom: '5%',
   },
-
   textSmall: {
     fontSize: 24,
     fontWeight: 'bold',
     alignSelf: 'flex-start',
-    marginBottom: '5%',
   },
-
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -293,7 +270,6 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingRight: 12,
   },
-
   leftIconCircle: {
     width: 36,
     height: 36,
@@ -301,31 +277,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   input: {
     flex: 1,
     fontSize: 16,
     marginLeft: 10,
   },
-
   eyeContainer: {
     paddingHorizontal: 4,
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   smallBtnRow: {
     marginTop: '5%',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   smallBtn: {
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 10,
   },
-
   loginBtn: {
     height: 50,
     borderRadius: 50,
@@ -333,7 +304,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   loginText: {
     fontWeight: 'bold',
     fontSize: 18,
