@@ -69,6 +69,10 @@ export default function LoginScreen() {
     navigation.navigate("Profile");
   };
 
+  const handleRegOrFor=()=>{
+    navigation.navigate("s2");
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={[
@@ -183,7 +187,7 @@ export default function LoginScreen() {
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={handleRegOrFor}>
                 <Text style={[styles.smallBtn, { color: T.primary }]}>
                   Register?
                 </Text>

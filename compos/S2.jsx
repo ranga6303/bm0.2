@@ -4,7 +4,7 @@ import {
     View
 } from 'react-native'
 
-export default function ManageCredentials(){
+export default function MC(){
     return(
         <Text>secondary screen</Text>
     )
