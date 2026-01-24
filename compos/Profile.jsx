@@ -24,7 +24,11 @@ import { ThemeContext } from '../context/ThemeContext.jsx';
 import { theme } from '../theme/theme.js';
 import {shadow} from '../utils/shadow.js'
 
-export default function Profile() {
+import { Servercontext } from '../context/ServerContext.jsx';
+
+export default function Profile({route}) {
+const {userDetails}=route.params;
+  const serverinfo=useContext(Servercontext);
   // source for user profile photo
   const source = Platform.OS === 'android'? { uri: 'user' }: require('../assets/user.png')
 
@@ -37,9 +41,9 @@ export default function Profile() {
 
   const navigation = useNavigation();
 
-  useEffect(()=>{
-    console.log("satte: ",navigation.getState())
-  })
+  // useEffect(()=>{
+  //   console.log("satte: ",navigation.getState())
+  // })
 
   // Simple placeholder action
   const showPop = (txt) => {
@@ -95,16 +99,16 @@ export default function Profile() {
         <View style={[styles.profileCard, shadow(8),{ backgroundColor: T.card }]}>
           
           <Image
-            source={require('../assets/user.png')}
+            source={{uri:userDetails.img}}
             style={styles.avatar}
           />
 
           <Text style={[styles.name, { color: T.text }]}>
-            Uzumaki Naruto
+            {userDetails.name}
           </Text>
 
           <Text style={[styles.id, { color: T.subText }]}>
-            Student · 1234567890
+            {userDetails.rollno}
           </Text>
         </View>
 

@@ -13,7 +13,7 @@ import {
   BackHandler,
   ToastAndroid,
 } from 'react-native';
-
+import api from '../compos/api.js'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,7 +22,11 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { ThemeContext } from '../context/ThemeContext.jsx';
 import { theme } from '../theme/theme.js';
 
+import {Servercontext} from '../context/ServerContext.jsx';
+
 export default function LoginScreen() {
+
+  const serverinfo=useContext(Servercontext);
 
   const { dark } = useContext(ThemeContext);
   const T = dark ? theme.dark : theme.light;
@@ -63,9 +67,9 @@ export default function LoginScreen() {
   }, []);
 
   // debug state log
-  useEffect(() => {
-    console.log("state: ", navigation.getState());
-  });
+  // useEffect(() => {
+  //   console.log("state: ", navigation.getState());
+  // });
 
   // double-back exit logic (only on Login screen)
   useFocusEffect(
@@ -91,9 +95,25 @@ export default function LoginScreen() {
   );
 
   // navigation
-  const handleLogin = () => {
-    navigation.navigate("Profile");
-  };
+  const handleLogin = async () => {
+  const response = await api(
+    serverinfo.url,
+    serverinfo.req(userinputval, passinputval)
+  );
+
+  if (!response || !response.ok) {
+    console.log("Login failed at handleLogin");
+    return;
+  }
+
+  const userDetails = response.data;
+
+  if (userDetails?.message === "Login successful") {
+    navigation.navigate("Profile", { userDetails });
+  } else {
+    console.log("Login failed at handleLogin");
+  }
+};
 
   const handleRegister = () => {
     navigation.navigate("RegOrFor", { scrtype: "Register", usertype: user_type });
